@@ -15,6 +15,7 @@ public class Ball : MonoBehaviour {
 			Debug.Log("owner: " + owner);
 			SetColor(owner);
 			p.b = this;
+			//p.b = this.GetComponent<Ball>();
 		}else{
 			p.health--;
 			Debug.Log("decrement health");

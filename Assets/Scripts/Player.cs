@@ -12,13 +12,15 @@ public class Player : MonoBehaviour {
 	public bool isThrowing;
 	public float scaleFactor;
 
-	void OnTriggerEnter2D(){
+	void OnTriggerEnter2D(Collider2D other){
+		b = other.GetComponent<Ball>();
 	}
 
 	// Use this for initialization
 	void Start () {
 		SetColor (team);
 		isThrowing = false;
+		scaleFactor = 2.75f;
 	}
 	
 	// Update is called once per frame
