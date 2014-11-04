@@ -10,6 +10,11 @@ public class Player : MonoBehaviour {
 	public float speed;
 
 
+	void OnTriggerEnter2D(){
+		health--;
+		Debug.Log("health--");
+	}
+
 	// Use this for initialization
 	void Start () {
 		SetColor (team);
