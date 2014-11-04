@@ -6,13 +6,17 @@ public class Ball : MonoBehaviour {
 	public Team owner;
 	public Vector3 velocity;
 	public bool isNeutral;
-
+	public Player p;
 
 	void OnTriggerEnter2D(Collider2D other){
 		if(isNeutral){
-			//owner = other.GetComponent("Player").team;
+			p = other.GetComponent<Player>();
+			owner = p.team;
+			Debug.Log("owner: " + owner);
+			SetColor(owner);
 		}
 	}
+
 	bool IsFree() {
 		return isNeutral;
 	}
