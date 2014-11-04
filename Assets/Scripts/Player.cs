@@ -8,20 +8,35 @@ public class Player : MonoBehaviour {
 	public Team team;
 	public int health;
 	public float speed;
+	public Ball b;
+	public bool isThrowing;
+	public float scaleFactor;
 
 	void OnTriggerEnter2D(){
-		health--;
-		Debug.Log("health--");
 	}
 
 	// Use this for initialization
 	void Start () {
 		SetColor (team);
+		isThrowing = false;
 	}
 	
 	// Update is called once per frame
 	void Update () {
-		Move ();
+		if(!isThrowing){
+			Move ();
+			if(Input.GetKeyDown("space")){
+				isThrowing = true;
+				Debug.Log("throwing");
+			}
+		}else{
+			Throw();
+			if(Input.GetKeyUp("space")){
+				isThrowing = false;
+				b = null;
+				Debug.Log("not throwing");
+			}
+		}
 	}
 
 	void SetColor(Team t){
@@ -34,6 +49,15 @@ public class Player : MonoBehaviour {
 			break;
 		}
 
+	}
+
+	void Throw(){
+		Vector3 ballMove = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
+		Debug.Log(ballMove);
+
+		if(b != null){
+			b.transform.Translate(ballMove * Time.deltaTime * scaleFactor);
+		}
 	}
 
 	void Move(){

@@ -9,11 +9,15 @@ public class Ball : MonoBehaviour {
 	public Player p;
 
 	void OnTriggerEnter2D(Collider2D other){
+		p = other.GetComponent<Player>();
 		if(isNeutral){
-			p = other.GetComponent<Player>();
 			owner = p.team;
 			Debug.Log("owner: " + owner);
 			SetColor(owner);
+			p.b = this;
+		}else{
+			p.health--;
+			Debug.Log("decrement health");
 		}
 	}
 
@@ -50,6 +54,5 @@ public class Ball : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		//if v <.1, turn white
 	}
 }
