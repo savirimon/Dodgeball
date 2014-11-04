@@ -9,7 +9,6 @@ public class Player : MonoBehaviour {
 	public int health;
 	public float speed;
 
-
 	void OnTriggerEnter2D(){
 		health--;
 		Debug.Log("health--");

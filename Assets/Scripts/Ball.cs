@@ -9,20 +9,34 @@ public class Ball : MonoBehaviour {
 
 
 	void OnTriggerEnter2D(Collider2D other){
-		//decrement health
+		if(isNeutral){
+			//owner = other.GetComponent("Player").team;
+		}
 	}
 	bool IsFree() {
 		return isNeutral;
 	}
 
-	void SetColor(Team owner){
-		//if owner is neutral, turn ball white
+	void SetWhite(){
+		renderer.material.color = Color.white;
+	}
 
+	void SetColor(Team owner){
+		switch (owner) {
+		case Team.ONE:
+			renderer.material.color = Color.cyan;
+			break;
+		case Team.TWO:
+			renderer.material.color = Color.yellow;
+			break;
+		}
 	}
 
 	void MoveBall(){
-		//if magnitude of velocity < .1, turn white
-		//make it stop
+	}
+
+	void SetNeutral(){
+		SetWhite();
 	}
 
 	// Use this for initialization
@@ -32,6 +46,6 @@ public class Ball : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-	
+		//if v <.1, turn white
 	}
 }
