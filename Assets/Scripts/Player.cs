@@ -11,18 +11,34 @@ public class Player : MonoBehaviour {
 	public Ball b;
 	public bool isThrowing;
 	public float scaleFactor;
+	public bool againstWall;
+
+	void OnTriggerEnter2D(Collider2D other){
+		if(other.tag == "Wall"){
+			//reflect x and y
+			Debug.Log("wall");
+			againstWall = true;
+		}
+	}
+
+	void OnTriggerExit2D(Collider2D other){
+		if(other.tag == "Wall"){
+			againstWall = false;
+			Debug.Log("no longer against wall");
+		}
+	}
 
 	// Use this for initialization
 	void Start () {
 		SetColor (team);
 		isThrowing = false;
-		scaleFactor = 2.75f;
+		scaleFactor = 12.75f;
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		if(!isThrowing){
-			Move ();
+			Move();
 			if(Input.GetKeyDown("space")){
 				isThrowing = true;
 				Debug.Log("throwing");
@@ -31,6 +47,7 @@ public class Player : MonoBehaviour {
 			Throw();
 			if(Input.GetKeyUp("space")){
 				isThrowing = false;
+				b.transform.parent  = null;
 				b = null;
 				Debug.Log("not throwing");
 			}
@@ -46,7 +63,6 @@ public class Player : MonoBehaviour {
 			renderer.material.color = Color.yellow;
 			break;
 		}
-
 	}
 
 	void Throw(){
@@ -54,7 +70,7 @@ public class Player : MonoBehaviour {
 		Debug.Log(ballMove);
 
 		if(b != null){
-			b.transform.Translate(ballMove * Time.deltaTime * scaleFactor);
+			b.velocity = (ballMove * Time.deltaTime * scaleFactor);
 		}
 	}
 
