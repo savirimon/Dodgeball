@@ -12,10 +12,6 @@ public class Player : MonoBehaviour {
 	public bool isThrowing;
 	public float scaleFactor;
 
-	void OnTriggerEnter2D(Collider2D other){
-		b = other.GetComponent<Ball>();
-	}
-
 	// Use this for initialization
 	void Start () {
 		SetColor (team);
