@@ -51,11 +51,10 @@ public class Ball : MonoBehaviour {
 	}
 	*/
 
-
 	void OnCollisionEnter2D(Collision2D col){
 //		Debug.Log (col.collider.gameObject);
 		if (LayerMask.NameToLayer("Wall") == col.collider.gameObject.layer) {
-			particleSystem.Emit(5);
+
 			if(col.gameObject.tag == "Top"){
 				Deflect(Vector3.down);
 			}
