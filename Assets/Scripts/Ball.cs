@@ -13,6 +13,9 @@ public class Ball : MonoBehaviour {
 
 	bool isHeld = false;
 
+	public AudioClip hit;
+	public AudioClip wallDeflect;
+
 	/*
 	void OnTriggerEnter2D(Collider2D other){
 		p = other.GetComponent<Player>();
@@ -70,6 +73,7 @@ public class Ball : MonoBehaviour {
 				Deflect(Vector3.left);
 
 			}
+			Camera.main.audio.PlayOneShot(wallDeflect);
 			owner = null;
 			SetNeutral();
 		}
@@ -79,14 +83,19 @@ public class Ball : MonoBehaviour {
 
 			if (isNeutral){
 				Deflect(normal);
+				Camera.main.audio.PlayOneShot(wallDeflect);
 
 			}
 			else if (other.team == owner.team){
 				Deflect(normal);
+				Camera.main.audio.PlayOneShot(wallDeflect);
+
 			}
 			else if (other.team != owner.team){
+				other.DecrementHealth();
 					Deflect(normal);
 					SetNeutral();
+				Camera.main.audio.PlayOneShot(hit);
 			}
 		}
 			

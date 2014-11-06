@@ -10,7 +10,7 @@ public class Player : MonoBehaviour {
 
 	public Team team;
 
-	public int health;
+	private int health = 3;
 	public float speed;
 	public Ball heldBall;
 	public bool isThrowing;
@@ -25,12 +25,17 @@ public class Player : MonoBehaviour {
 
 	bool defenseAvailable = true;
 
-
+	public GameObject[] healthBars;
+	public AudioClip throwSound;
+	public AudioClip pickupSound;
 
 	
 	// Use this for initialization
 	void Start () {
 		Init ();
+
+		healthBars = new GameObject[health];
+		DisplayHealth();
 	}
 	
 	// Update is called once per frame
@@ -90,6 +95,7 @@ public class Player : MonoBehaviour {
 		if(heldBall != null){
 			heldBall.Release (this.transform.right);
 			heldBall = null;
+			PlayThrowSound();
 		}
 	}
 
@@ -115,7 +121,7 @@ public class Player : MonoBehaviour {
 
 	void Pickup(Ball b){
 //		Debug.Log("Pickup Ball");
-		
+		PlayPickupSound ();
 		heldBall = b;
 		heldBall.SetOwner (this);
 	}
@@ -165,6 +171,40 @@ public class Player : MonoBehaviour {
 		ring = transform.FindChild ("Ring").GetComponent<LineCircle>();
 		ring.SetRadius (.55f);
 		
+	}
+
+	void PlayThrowSound(){
+		Camera.main.audio.PlayOneShot (throwSound);
+		//AudioSource.PlayClipAtPoint(throwSound, transform.position);
+		Debug.Log("throw sound");
+	}
+	
+	void PlayPickupSound(){
+		Camera.main.audio.PlayOneShot (pickupSound);
+		//AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+		Debug.Log("pickup sound");
+	}
+	
+	void DisplayHealth(){
+		for(int i = 0; i < health; i++){
+			GameObject bar = GameObject.CreatePrimitive(PrimitiveType.Quad);
+			if(team == Team.ONE){
+				bar.transform.position = new Vector3(10f,1f - i);
+				bar.renderer.material.color = Color.cyan;
+				
+			}else if(team == Team.TWO){
+				bar.transform.position = new Vector3(-10f,1f - i);
+				bar.renderer.material.color = Color.magenta;
+				
+			}
+			bar.transform.localScale += new Vector3(-0f, -0.6f);
+			healthBars[i] = bar;
+		}
+	}
+	
+	public void DecrementHealth(){
+		healthBars [health - 1].renderer.enabled = false;
+		health--;
 	}
 
 	void OnTriggerEnter2D(Collider2D other){
