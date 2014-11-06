@@ -75,14 +75,17 @@ public class Ball : MonoBehaviour {
 		}
 		if (LayerMask.NameToLayer("Player") == col.collider.gameObject.layer) {
 			Player other = col.gameObject.GetComponent<Player>();
+			Vector3 normal = (this.transform.position - new Vector3(col.contacts[0].point.x, col.contacts[0].point.y)).normalized;
 
 			if (isNeutral){
+				Deflect(normal);
+
 			}
 			else if (other.team == owner.team){
-				Deflect(this.transform.position - new Vector3(col.contacts[0].point.x, col.contacts[0].point.y));
+				Deflect(normal);
 			}
 			else if (other.team != owner.team){
-					Deflect(this.transform.position - new Vector3(col.contacts[0].point.x, col.contacts[0].point.y));
+					Deflect(normal);
 					SetNeutral();
 			}
 		}

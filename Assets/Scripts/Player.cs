@@ -101,7 +101,7 @@ public class Player : MonoBehaviour {
 		Collider2D[] objectsInRing = Physics2D.OverlapCircleAll (new Vector2 (transform.position.x, transform.position.y), defenseRadius);
 		foreach (Collider2D obj in objectsInRing) {
 			if (obj.gameObject.tag == "Ball"){
-				StartCoroutine("SlowMotion", 1);
+				//StartCoroutine("SlowMotion", .1f);
 				Ball ball  = obj.GetComponent<Ball>();
 				if (heldBall == null){
 					Pickup(ball);
@@ -114,7 +114,7 @@ public class Player : MonoBehaviour {
 	}
 
 	void Pickup(Ball b){
-		Debug.Log("Pickup Ball");
+//		Debug.Log("Pickup Ball");
 		
 		heldBall = b;
 		heldBall.SetOwner (this);
@@ -202,8 +202,8 @@ public class Player : MonoBehaviour {
 
 	IEnumerator DefenseCooldown(){
 		//Debug.Log("DefenseCooldown");
-
 		defenseRadius = 0;
+		yield return new WaitForSeconds (.1f);
 		ring.SetRadius (defenseRadius);
 		yield return new WaitForSeconds (1);
 		defenseRadius = .55f;
