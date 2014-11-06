@@ -12,20 +12,23 @@ public class Player : MonoBehaviour {
 
 	public int health;
 	public float speed;
-	public Ball b;
+	public Ball heldBall;
 	public bool isThrowing;
 	public float scaleFactor;
 	public bool againstWall;
+	public Vector3 moveVector;
 
 	protected PlayerIndex gamepadNum;
 	protected GamePadState gamepad;
 
 
 	void OnTriggerEnter2D(Collider2D other){
-		if(other.tag == "Wall"){
-			//reflect x and y
-			Debug.Log("wall");
-			againstWall = true;
+		if(other.tag == "Ball"){
+			Ball ball = other.GetComponent<Ball>();
+			if (ball.isNeutral && heldBall == null){
+				Pickup(ball);
+			}
+
 		}
 	}
 
@@ -38,31 +41,20 @@ public class Player : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
-		SetColor (team);
-		isThrowing = false;
-		scaleFactor = 12.75f;
+		Init ();
 	}
 	
 	// Update is called once per frame
 	void Update () {
 		gamepad = GamePad.GetState(gamepadNum);
-		/*
-		if(!isThrowing){
-			Move();
-			if(Input.GetKeyDown("space")){
-				isThrowing = true;
-				Debug.Log("throwing");
-			}
-		}else{
-			Throw();
-			if(Input.GetKeyUp("space")){
-				isThrowing = false;
-				b.transform.parent  = null;
-				b = null;
-				Debug.Log("not throwing");
-			}
+
+		if (playerNum == 0 && Input.GetButtonDown("Fire1")){
+			Throw ();
 		}
-		*/
+		else if (gamepad.Buttons.A == ButtonState.Pressed){
+			Throw ();
+		}
+
 	}
 
 	void FixedUpdate(){
@@ -73,20 +65,36 @@ public class Player : MonoBehaviour {
 		switch (t) {
 		case Team.ONE:
 			renderer.material.color = Color.cyan;
+			//gameObject.layer = LayerMask.NameToLayer("TeamOne");
 			break;
 		case Team.TWO:
-			renderer.material.color = Color.yellow;
+			renderer.material.color = Color.magenta;
+			//gameObject.layer = LayerMask.NameToLayer("TeamTwo");
+
 			break;
 		}
 	}
 
 	void Throw(){
-		Vector3 ballMove = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-		Debug.Log(ballMove);
-
-		if(b != null){
-			b.velocity = (ballMove * Time.deltaTime * scaleFactor);
+		if(heldBall != null){
+			heldBall.Release (this.transform.right);
+			heldBall = null;
 		}
+	}
+
+	void Block(Ball ball){
+
+	}
+
+	void Catch(Ball ball){
+	
+	}
+
+	void Pickup(Ball b){
+		Debug.Log("Pickup Ball");
+		
+		heldBall = b;
+		heldBall.SetOwner (this);
 	}
 
 	void Move(){
@@ -104,11 +112,14 @@ public class Player : MonoBehaviour {
 			leftX = gamepad.ThumbSticks.Left.X;
 			leftY = gamepad.ThumbSticks.Left.Y;
 		}
-		Vector3 move = new Vector3 (leftX, leftY, 0);
 
-		this.rigidbody2D.MovePosition (this.transform.position + move * Time.fixedDeltaTime * speed);
+		moveVector = new Vector3 (leftX, leftY, 0);
+
+		this.rigidbody2D.MovePosition (this.transform.position + moveVector * Time.fixedDeltaTime * speed);
 
 	}
+
+
 
 	public void Init () {
 		switch (playerNum){
@@ -130,6 +141,17 @@ public class Player : MonoBehaviour {
 		}
 		
 		name = ("Player " + playerNum);
+
+		// on the right side of the court
+		if (this.transform.position.x > 0) {
+			transform.Rotate(0,0,180);
+			
+				} 
+		//on the left side of the court
+		else {
+				}
+
+		SetColor (team);
 		
 	}
 	
