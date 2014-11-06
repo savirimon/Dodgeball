@@ -63,6 +63,7 @@ public class Ball : MonoBehaviour {
 			}
 			else if (other.team == owner.team){
 			Deflect(col.contacts[0].point);
+			Debug.Log("decrement health");
 			}
 			else if (other.team != owner.team){
 				Deflect(col.contacts[0].point);

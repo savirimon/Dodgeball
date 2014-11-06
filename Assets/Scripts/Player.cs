@@ -1,4 +1,4 @@
-﻿using UnityEngine;
+using UnityEngine;
 using System.Collections;
 using XInputDotNetPure;
 
@@ -10,25 +10,47 @@ public class Player : MonoBehaviour {
 
 	public Team team;
 
-	public int health;
+	private int health;
 	public float speed;
 	public Ball heldBall;
 	public bool isThrowing;
 	public float scaleFactor;
 	public bool againstWall;
 	public Vector3 moveVector;
+	public GameObject[] healthBars;
 
 	protected PlayerIndex gamepadNum;
 	protected GamePadState gamepad;
 
+	void DisplayHealth(){
+		for(int i = 0; i < health; i++){
+			GameObject bar = GameObject.CreatePrimitive(PrimitiveType.Quad);
+			if(team == Team.ONE){
+				bar.transform.position = new Vector3(10f,1f - i);
+			}else if(team == Team.TWO){
+				bar.transform.position = new Vector3(-10f,1f - i);
+			}
+			bar.transform.localScale += new Vector3(-0f, -0.6f);
+			bar.renderer.material.color = Color.green;
+			healthBars[i] = bar;
+		}
+	}
+
+	void DecrementHealth(){
+		healthBars[health-1].renderer.material.color = Color.black;
+		health--;
+	}
 
 	void OnTriggerEnter2D(Collider2D other){
 		if(other.tag == "Ball"){
 			Ball ball = other.GetComponent<Ball>();
 			if (ball.isNeutral && heldBall == null){
 				Pickup(ball);
+			}else{
+				if(!(ball.owner == this)){
+					DecrementHealth();
+				}
 			}
-
 		}
 	}
 
@@ -42,6 +64,11 @@ public class Player : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		Init ();
+
+		health = 3;
+		healthBars = new GameObject[health];
+		DisplayHealth();
+
 	}
 	
 	// Update is called once per frame
