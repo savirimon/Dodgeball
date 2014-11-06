@@ -81,10 +81,12 @@ public class Player : MonoBehaviour {
 		switch (t) {
 		case Team.ONE:
 			renderer.material.color = Color.cyan;
+			particleSystem.startColor = Color.cyan;
 			//gameObject.layer = LayerMask.NameToLayer("TeamOne");
 			break;
 		case Team.TWO:
 			renderer.material.color = Color.magenta;
+			particleSystem.startColor = Color.magenta;
 			//gameObject.layer = LayerMask.NameToLayer("TeamTwo");
 
 			break;
@@ -189,15 +191,15 @@ public class Player : MonoBehaviour {
 		for(int i = 0; i < health; i++){
 			GameObject bar = GameObject.CreatePrimitive(PrimitiveType.Quad);
 			if(team == Team.ONE){
-				bar.transform.position = new Vector3(10f,1f - i);
+				bar.transform.position = new Vector3(11f,1.5f - i * 1.5f);
 				bar.renderer.material.color = Color.cyan;
 				
 			}else if(team == Team.TWO){
-				bar.transform.position = new Vector3(-10f,1f - i);
+				bar.transform.position = new Vector3(-11f,1.5f - i * 1.5f);
 				bar.renderer.material.color = Color.magenta;
 				
 			}
-			bar.transform.localScale += new Vector3(-0f, -0.6f);
+			bar.transform.localScale =  new Vector3(2,1,1);
 			healthBars[i] = bar;
 		}
 	}
@@ -205,7 +207,7 @@ public class Player : MonoBehaviour {
 	public void DecrementHealth(){
 		healthBars [health - 1].renderer.enabled = false;
 		health--;
-		particleSystem.Emit(7);
+		particleSystem.Emit(10);
 	}
 
 	void OnTriggerEnter2D(Collider2D other){
@@ -220,12 +222,13 @@ public class Player : MonoBehaviour {
 
 	IEnumerator ActiveDefense(){
 		float maxRadius = 1.25f;
+		float growSpeed = 2;
 		//Debug.Log ("Activate Defense");
 		defenseAvailable = false;
 		defenseRadius = .55f;
 		ring.SetRadius(defenseRadius);
 		while (defenseRadius < maxRadius) {
-			defenseRadius += Time.deltaTime;
+			defenseRadius += Time.deltaTime * growSpeed;
 			ring.SetRadius(defenseRadius);
 			yield return null;
 		}
@@ -244,9 +247,9 @@ public class Player : MonoBehaviour {
 	IEnumerator DefenseCooldown(){
 		//Debug.Log("DefenseCooldown");
 		defenseRadius = 0;
-		yield return new WaitForSeconds (.1f);
+		//yield return new WaitForSeconds (.1f);
 		ring.SetRadius (defenseRadius);
-		yield return new WaitForSeconds (1);
+		yield return new WaitForSeconds (0);
 		defenseRadius = .55f;
 		ring.SetRadius (defenseRadius);
 		defenseAvailable = true;
