@@ -203,7 +203,7 @@ public class Player : MonoBehaviour {
 	IEnumerator DefenseCooldown(){
 		//Debug.Log("DefenseCooldown");
 		defenseRadius = 0;
-		yield return new WaitForSeconds (.1f);
+		yield return new WaitForSeconds (.15f);
 		ring.SetRadius (defenseRadius);
 		yield return new WaitForSeconds (1);
 		defenseRadius = .55f;
