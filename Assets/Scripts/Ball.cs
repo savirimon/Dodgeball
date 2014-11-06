@@ -52,7 +52,24 @@ public class Ball : MonoBehaviour {
 	void OnCollisionEnter2D(Collision2D col){
 //		Debug.Log (col.collider.gameObject);
 		if (LayerMask.NameToLayer("Wall") == col.collider.gameObject.layer) {
-			Deflect(col.contacts[0].point);
+			if(col.gameObject.tag == "Top"){
+				Deflect(Vector3.down);
+			}
+			
+			if(col.gameObject.tag == "Bottom"){
+				Deflect(Vector3.up);
+
+			}
+			
+			if(col.gameObject.tag == "Left"){
+				Deflect(Vector3.right);
+
+			}
+			
+			if(col.gameObject.tag == "Right"){
+				Deflect(Vector3.left);
+
+			}
 			owner = null;
 			SetNeutral();
 		}
@@ -62,11 +79,11 @@ public class Ball : MonoBehaviour {
 			if (isNeutral){
 			}
 			else if (other.team == owner.team){
-			Deflect(col.contacts[0].point);
+				Deflect(this.transform.position - new Vector3(col.contacts[0].point.x, col.contacts[0].point.y));
 			}
 			else if (other.team != owner.team){
-				Deflect(col.contacts[0].point);
-				SetNeutral();
+					Deflect(this.transform.position - new Vector3(col.contacts[0].point.x, col.contacts[0].point.y));
+					SetNeutral();
 			}
 		}
 			
@@ -113,7 +130,7 @@ public class Ball : MonoBehaviour {
 				}
 	}
 
-	void SetNeutral(){
+	public void SetNeutral(){
 		isNeutral = true;
 		owner = null;
 		SetColor(Color.white);
@@ -136,9 +153,9 @@ public class Ball : MonoBehaviour {
 				}
 	}
 
-	void Deflect(Vector2 deflectionPoint){
-		Vector3 deflectionPoint3 = new Vector3 (deflectionPoint.x, deflectionPoint.y, 0);
-		Vector3 reflection = Vector3.Reflect (moveDirection, (this.transform.position - deflectionPoint3).normalized);
+	public void Deflect(Vector3 normal){
+		//Vector3 deflectionPoint3 = new Vector3 (deflectionPoint.x, deflectionPoint.y, 0);
+		Vector3 reflection = Vector3.Reflect (moveDirection, normal);
 		moveDirection = reflection;
 //		Debug.Log (reflection);
 	}

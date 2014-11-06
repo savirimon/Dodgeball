@@ -18,27 +18,16 @@ public class Player : MonoBehaviour {
 	public bool againstWall;
 	public Vector3 moveVector;
 
+	float defenseRadius;
 	protected PlayerIndex gamepadNum;
 	protected GamePadState gamepad;
+	protected LineCircle ring;
+
+	bool defenseAvailable = true;
 
 
-	void OnTriggerEnter2D(Collider2D other){
-		if(other.tag == "Ball"){
-			Ball ball = other.GetComponent<Ball>();
-			if (ball.isNeutral && heldBall == null){
-				Pickup(ball);
-			}
 
-		}
-	}
-
-	void OnTriggerExit2D(Collider2D other){
-		if(other.tag == "Wall"){
-			againstWall = false;
-			Debug.Log("no longer against wall");
-		}
-	}
-
+	
 	// Use this for initialization
 	void Start () {
 		Init ();
@@ -48,13 +37,35 @@ public class Player : MonoBehaviour {
 	void Update () {
 		gamepad = GamePad.GetState(gamepadNum);
 
-		if (playerNum == 0 && Input.GetButtonDown("Fire1")){
-			Throw ();
-		}
-		else if (gamepad.Buttons.A == ButtonState.Pressed){
-			Throw ();
-		}
+		if (playerNum == 0){
+			if (Input.GetButtonDown("Fire1")){
+				Throw ();
+			}
+			if (Input.GetButtonDown("Fire2") && defenseAvailable){
+				//Debug.Log("Fire2 down");
+				StartCoroutine ("ActiveDefense");
+			}
+			if (Input.GetButtonUp("Fire2") && !defenseAvailable && defenseRadius >0){
+				//Debug.Log("Fire2 up");
 
+				Catch ();
+				StopCoroutine("ActiveDefense");
+				StartCoroutine("DefenseCooldown");
+			}
+		}
+		else{
+			if (gamepad.Buttons.A == ButtonState.Pressed){
+				Throw ();
+			}
+			if (gamepad.Buttons.B == ButtonState.Pressed && defenseAvailable){
+				StartCoroutine ("ActiveDefense");
+			}
+			if (gamepad.Buttons.B == ButtonState.Released && !defenseAvailable  && defenseRadius >0){
+				Catch ();
+				StopCoroutine("ActiveDefense");
+				StartCoroutine("DefenseCooldown");
+			}
+		}
 	}
 
 	void FixedUpdate(){
@@ -86,8 +97,20 @@ public class Player : MonoBehaviour {
 
 	}
 
-	void Catch(Ball ball){
-	
+	void Catch(){
+		Collider2D[] objectsInRing = Physics2D.OverlapCircleAll (new Vector2 (transform.position.x, transform.position.y), defenseRadius);
+		foreach (Collider2D obj in objectsInRing) {
+			if (obj.gameObject.tag == "Ball"){
+				StartCoroutine("SlowMotion", 1);
+				Ball ball  = obj.GetComponent<Ball>();
+				if (heldBall == null){
+					Pickup(ball);
+				}
+				else{ ball.Deflect(ball.transform.position - this.transform.position);
+					ball.SetNeutral();
+				}
+			}
+		}
 	}
 
 	void Pickup(Ball b){
@@ -98,25 +121,17 @@ public class Player : MonoBehaviour {
 	}
 
 	void Move(){
-		//Vector3 move = new Vector3(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical"));
-		//this.transform.Translate (move * Time.deltaTime * speed);
-
 		float leftX, leftY;
-
 		if (playerNum == 0){
 			leftX = Input.GetAxis ("Horizontal");
 			leftY = Input.GetAxis ("Vertical");
 		}
-
 		else{
 			leftX = gamepad.ThumbSticks.Left.X;
 			leftY = gamepad.ThumbSticks.Left.Y;
 		}
-
 		moveVector = new Vector3 (leftX, leftY, 0);
-
 		this.rigidbody2D.MovePosition (this.transform.position + moveVector * Time.fixedDeltaTime * speed);
-
 	}
 
 
@@ -139,20 +154,72 @@ public class Player : MonoBehaviour {
 			playerNum = 0;
 			break;
 		}
-		
 		name = ("Player " + playerNum);
-
-		// on the right side of the court
 		if (this.transform.position.x > 0) {
 			transform.Rotate(0,0,180);
-			
-				} 
-		//on the left side of the court
+		} 
 		else {
-				}
+		}
 
 		SetColor (team);
+		ring = transform.FindChild ("Ring").GetComponent<LineCircle>();
+		ring.SetRadius (.55f);
 		
+	}
+
+	void OnTriggerEnter2D(Collider2D other){
+		if(other.tag == "Ball"){
+			Ball ball = other.GetComponent<Ball>();
+			if (ball.isNeutral && heldBall == null){
+				Pickup(ball);
+			}
+			
+		}
+	}
+
+	IEnumerator ActiveDefense(){
+		float maxRadius = 1.25f;
+		//Debug.Log ("Activate Defense");
+		defenseAvailable = false;
+		defenseRadius = .55f;
+		ring.SetRadius(defenseRadius);
+		while (defenseRadius < maxRadius) {
+			defenseRadius += Time.deltaTime;
+			ring.SetRadius(defenseRadius);
+			yield return null;
+		}
+		if (defenseRadius >= maxRadius) {
+						defenseRadius = maxRadius;
+						ring.SetRadius (defenseRadius);
+						yield return new WaitForSeconds (.3f);
+		}
+		//Debug.Log("after");
+		defenseRadius = 0;
+		ring.SetRadius (defenseRadius);
+
+		StartCoroutine ("DefenseCooldown");
+	}
+
+	IEnumerator DefenseCooldown(){
+		//Debug.Log("DefenseCooldown");
+
+		defenseRadius = 0;
+		ring.SetRadius (defenseRadius);
+		yield return new WaitForSeconds (1);
+		defenseRadius = .55f;
+		ring.SetRadius (defenseRadius);
+		defenseAvailable = true;
+		//Debug.Log ("Defense Available");
+	}
+
+	IEnumerator SlowMotion(float scale){
+		Time.timeScale = 0;
+		while (Time.timeScale < 1) {
+			Time.timeScale += Time.unscaledDeltaTime * scale;
+			yield return null;
+		}
+
+		Time.timeScale = 1;
 	}
 	
 }
