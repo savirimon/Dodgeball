@@ -191,11 +191,11 @@ public class Player : MonoBehaviour {
 		for(int i = 0; i < health; i++){
 			GameObject bar = GameObject.CreatePrimitive(PrimitiveType.Quad);
 			if(team == Team.ONE){
-				bar.transform.position = new Vector3(11f,1.5f - i * 1.5f);
+				bar.transform.position = new Vector3(11f,-1.5f + i * 1.5f);
 				bar.renderer.material.color = Color.cyan;
 				
 			}else if(team == Team.TWO){
-				bar.transform.position = new Vector3(-11f,1.5f - i * 1.5f);
+				bar.transform.position = new Vector3(-11f,-1.5f + i * 1.5f);
 				bar.renderer.material.color = Color.magenta;
 				
 			}
