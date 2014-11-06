@@ -11,6 +11,8 @@ public class Ball : MonoBehaviour {
 	TrailRenderer trail;
 	public float playerInfluence;
 
+	public AudioClip bounce;
+
 	bool isHeld = false;
 
 	/*
@@ -48,9 +50,14 @@ public class Ball : MonoBehaviour {
 	}
 	*/
 
+	void BounceSound(){
+		AudioSource.PlayClipAtPoint(bounce, transform.position);
+		Debug.Log("bounce sound");
+	}
 
 	void OnCollisionEnter2D(Collision2D col){
 //		Debug.Log (col.collider.gameObject);
+		BounceSound();
 		if (LayerMask.NameToLayer("Wall") == col.collider.gameObject.layer) {
 			Deflect(col.contacts[0].point);
 			owner = null;

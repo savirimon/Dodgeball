@@ -18,9 +18,21 @@ public class Player : MonoBehaviour {
 	public bool againstWall;
 	public Vector3 moveVector;
 	public GameObject[] healthBars;
+	public AudioClip throwSound;
+	public AudioClip pickupSound;
 
 	protected PlayerIndex gamepadNum;
 	protected GamePadState gamepad;
+
+	void PlayThrowSound(){
+		AudioSource.PlayClipAtPoint(throwSound, transform.position);
+		Debug.Log("throw sound");
+	}
+
+	void PlayPickupSound(){
+		AudioSource.PlayClipAtPoint(pickupSound, transform.position);
+		Debug.Log("pickup sound");
+	}
 
 	void DisplayHealth(){
 		for(int i = 0; i < health; i++){
@@ -46,6 +58,7 @@ public class Player : MonoBehaviour {
 			Ball ball = other.GetComponent<Ball>();
 			if (ball.isNeutral && heldBall == null){
 				Pickup(ball);
+				PlayPickupSound();
 			}else{
 				if(!(ball.owner == this)){
 					DecrementHealth();
@@ -103,6 +116,7 @@ public class Player : MonoBehaviour {
 	}
 
 	void Throw(){
+		PlayThrowSound();
 		if(heldBall != null){
 			heldBall.Release (this.transform.right);
 			heldBall = null;
