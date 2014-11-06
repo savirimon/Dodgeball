@@ -205,6 +205,7 @@ public class Player : MonoBehaviour {
 	public void DecrementHealth(){
 		healthBars [health - 1].renderer.enabled = false;
 		health--;
+		particleSystem.Emit(7);
 	}
 
 	void OnTriggerEnter2D(Collider2D other){
