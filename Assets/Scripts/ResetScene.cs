@@ -8,7 +8,7 @@ public class ResetScene : MonoBehaviour {
 	
 	// Update is called once per frame
 	void Update () {
-		if (Input.GetKeyDown (KeyCode.Space)) {
+		if (Input.GetKeyDown (KeyCode.Return)) {
 			Application.LoadLevel(Application.loadedLevel);		
 		}
 	
