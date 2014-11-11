@@ -16,6 +16,11 @@ public class Ball : MonoBehaviour {
 	public AudioClip hit;
 	public AudioClip wallDeflect;
 
+	Vector3 homePos;
+	protected LineCircle ring;
+	bool isHome = true;
+
+
 	/*
 	void OnTriggerEnter2D(Collider2D other){
 		p = other.GetComponent<Player>();
@@ -82,7 +87,7 @@ public class Ball : MonoBehaviour {
 		}
 		if (LayerMask.NameToLayer("Player") == col.collider.gameObject.layer) {
 			Player other = col.gameObject.GetComponent<Player>();
-			Vector3 normal = (this.transform.position - new Vector3(col.contacts[0].point.x, col.contacts[0].point.y)).normalized;
+			Vector3 normal = (this.transform.position - other.transform.position).normalized;
 
 			if (isNeutral){
 				Deflect(normal);
@@ -101,29 +106,27 @@ public class Ball : MonoBehaviour {
 				Camera.main.audio.PlayOneShot(hit);
 			}
 		}
-		/*
+
 		if (LayerMask.NameToLayer("Ball") == col.collider.gameObject.layer) {
-			Player other = col.gameObject.GetComponent<Ball>();
-			Vector3 normal = (this.transform.position - new Vector3(col.contacts[0].point.x, col.contacts[0].point.y)).normalized;
+			Ball other = col.gameObject.GetComponent<Ball>();
+			Vector3 normal = (this.transform.position - other.transform.position).normalized;
 			
-			if (isNeutral){
+			if (other.isNeutral){
 				Deflect(normal);
 				Camera.main.audio.PlayOneShot(wallDeflect);
 				
 			}
-			else if (other.team == owner.team){
+			else if (other.owner.team == owner.team){
 				Deflect(normal);
 				Camera.main.audio.PlayOneShot(wallDeflect);
 				
 			}
-			else if (other.team != owner.team){
-				other.DecrementHealth();
+			else if (other.owner.team != owner.team){
 				Deflect(normal);
-				SetNeutral();
-				Camera.main.audio.PlayOneShot(hit);
+				Camera.main.audio.PlayOneShot(wallDeflect);
 			}
 		}
-		*/
+
 			
 	}
 
@@ -135,6 +138,8 @@ public class Ball : MonoBehaviour {
 	}
 
 	public void SetOwner(Player p){
+		isHome = false;
+
 		owner = p;
 		switch (p.team) {
 		case Team.ONE:
@@ -168,12 +173,13 @@ public class Ball : MonoBehaviour {
 		
 
 		this.rigidbody2D.MovePosition (this.transform.position + move);
-		if (moveDirection.magnitude > .1f) {
+		if (moveDirection.magnitude > .01f) {
 						this.transform.LookAt (this.transform.position + moveDirection);	
 						this.transform.Rotate (0, 90, 90);
-				} else if (isNeutral) {
-						ResetPosition ();
-				}
+				} 
+		if (moveDirection.magnitude < .1f && isNeutral && !isHome) {
+			StartCoroutine("ReturnHome");
+		}
 	}
 
 	public void SetNeutral(){
@@ -184,6 +190,11 @@ public class Ball : MonoBehaviour {
 
 	// Use this for initialization
 	void Start () {
+		ring = transform.FindChild ("Ring").GetComponent<LineCircle>();
+		ring.SetThickness (.075f);
+		//ring.SetRadius (this.transform.localScale.x);
+
+		homePos = this.transform.position;
 		isNeutral = true;
 		//moveDirection = Vector3.one - Vector3.forward;
 		arrow = transform.FindChild ("Arrow").gameObject;
@@ -227,5 +238,39 @@ public class Ball : MonoBehaviour {
 		transform.localRotation = Quaternion.Euler(0,0,-90);
 		rigidbody2D.isKinematic = false;
 		moveDirection = direction;
+	}
+
+	IEnumerator ReturnHome(){
+		isHome = true;
+
+		float effectSpeed = 1;
+		collider2D.enabled = false;
+		ring.SetRadius (1);
+
+
+		float t = this.transform.localScale.x;
+		while (t > 0) {
+			t-=Time.deltaTime * effectSpeed;
+			this.transform.localScale = Vector3.one * t;
+			trail.startWidth = t;
+			yield return null;
+		}
+		t = 0;
+		trail.enabled = false;
+
+		this.transform.position = homePos;
+		moveDirection = Vector3.zero;
+		transform.rotation = Quaternion.identity;
+		while (t < .5f) {
+			t += Time.deltaTime * effectSpeed;	
+			this.transform.localScale = Vector3.one * t;
+			yield return null;
+		}
+		this.transform.localScale = Vector3.one * .5f;
+		trail.startWidth = .5f;
+		Debug.Log ("here");
+		ring.SetRadius (0);
+		collider2D.enabled = true;
+		trail.enabled = true;
 	}
 }
