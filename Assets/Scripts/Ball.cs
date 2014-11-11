@@ -66,16 +66,19 @@ public class Ball : MonoBehaviour {
 			
 			if(col.gameObject.tag == "Left"){
 				Deflect(Vector3.right);
+				SetNeutral();
+
 
 			}
 			
 			if(col.gameObject.tag == "Right"){
 				Deflect(Vector3.left);
+				SetNeutral();
+
 
 			}
 			Camera.main.audio.PlayOneShot(wallDeflect);
-			owner = null;
-			SetNeutral();
+
 		}
 		if (LayerMask.NameToLayer("Player") == col.collider.gameObject.layer) {
 			Player other = col.gameObject.GetComponent<Player>();
@@ -98,6 +101,29 @@ public class Ball : MonoBehaviour {
 				Camera.main.audio.PlayOneShot(hit);
 			}
 		}
+		/*
+		if (LayerMask.NameToLayer("Ball") == col.collider.gameObject.layer) {
+			Player other = col.gameObject.GetComponent<Ball>();
+			Vector3 normal = (this.transform.position - new Vector3(col.contacts[0].point.x, col.contacts[0].point.y)).normalized;
+			
+			if (isNeutral){
+				Deflect(normal);
+				Camera.main.audio.PlayOneShot(wallDeflect);
+				
+			}
+			else if (other.team == owner.team){
+				Deflect(normal);
+				Camera.main.audio.PlayOneShot(wallDeflect);
+				
+			}
+			else if (other.team != owner.team){
+				other.DecrementHealth();
+				Deflect(normal);
+				SetNeutral();
+				Camera.main.audio.PlayOneShot(hit);
+			}
+		}
+		*/
 			
 	}
 
@@ -130,15 +156,23 @@ public class Ball : MonoBehaviour {
 	}
 
 	void MoveBall(){
+
 		if (owner != null) {
-			moveDirection += owner.moveVector * playerInfluence;
-		}
+						moveDirection += owner.moveVector * playerInfluence;
+			if (moveDirection.magnitude < .5f){
+				moveDirection = moveDirection.normalized * .5f;
+			}
+				} else
+						moveDirection *= (1-Time.fixedDeltaTime * .5f);
 		Vector3 move = moveDirection * Time.fixedDeltaTime * speed;
+		
 
 		this.rigidbody2D.MovePosition (this.transform.position + move);
 		if (moveDirection.magnitude > .1f) {
 						this.transform.LookAt (this.transform.position + moveDirection);	
 						this.transform.Rotate (0, 90, 90);
+				} else if (isNeutral) {
+						ResetPosition ();
 				}
 	}
 
@@ -165,12 +199,25 @@ public class Ball : MonoBehaviour {
 				}
 	}
 
+	void ResetPosition(){
+		transform.position = Vector3.zero;
+		moveDirection = Vector3.zero;
+	}
+
 	public void Deflect(Vector3 normal){
 		//Vector3 deflectionPoint3 = new Vector3 (deflectionPoint.x, deflectionPoint.y, 0);
 		Vector3 reflection = Vector3.Reflect (moveDirection, normal);
 		moveDirection = reflection;
 //		Debug.Log (reflection);
 	}
+	/*
+	public void Deflect(GameObject other){
+		//Vector3 deflectionPoint3 = new Vector3 (deflectionPoint.x, deflectionPoint.y, 0);
+		Vector3 reflection = Vector3.Reflect (moveDirection, normal);
+		moveDirection = reflection;
+		//		Debug.Log (reflection);
+	}
+	*/
 
 	public void Release(Vector3 direction){
 		isHeld = false;

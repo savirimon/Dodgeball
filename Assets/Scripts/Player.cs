@@ -18,7 +18,7 @@ public class Player : MonoBehaviour {
 	public bool againstWall;
 	public Vector3 moveVector;
 
-	float defenseRadius;
+	float defenseRadius = 1.5f;
 	protected PlayerIndex gamepadNum;
 	protected GamePadState gamepad;
 	protected LineCircle ring;
@@ -48,14 +48,18 @@ public class Player : MonoBehaviour {
 			}
 			if (Input.GetButtonDown("Fire2") && defenseAvailable){
 				//Debug.Log("Fire2 down");
-				StartCoroutine ("ActiveDefense");
+				//StartCoroutine ("ActiveDefense");
+				Catch ();
+				StartCoroutine("DefenseCooldown");
+
+
 			}
 			if (Input.GetButtonUp("Fire2") && !defenseAvailable && defenseRadius >0){
 				//Debug.Log("Fire2 up");
 
-				Catch ();
-				StopCoroutine("ActiveDefense");
-				StartCoroutine("DefenseCooldown");
+				//Catch ();
+				//StopCoroutine("ActiveDefense");
+				//StartCoroutine("DefenseCooldown");
 			}
 		}
 		else{
@@ -63,12 +67,15 @@ public class Player : MonoBehaviour {
 				Throw ();
 			}
 			if (gamepad.Buttons.B == ButtonState.Pressed && defenseAvailable){
-				StartCoroutine ("ActiveDefense");
+				Catch ();
+				StartCoroutine("DefenseCooldown");
+
+				//StartCoroutine ("ActiveDefense");
 			}
 			if (gamepad.Buttons.B == ButtonState.Released && !defenseAvailable  && defenseRadius >0){
-				Catch ();
-				StopCoroutine("ActiveDefense");
-				StartCoroutine("DefenseCooldown");
+				//Catch ();
+				//StopCoroutine("ActiveDefense");
+				//StartCoroutine("DefenseCooldown");
 			}
 		}
 	}
@@ -171,7 +178,7 @@ public class Player : MonoBehaviour {
 
 		SetColor (team);
 		ring = transform.FindChild ("Ring").GetComponent<LineCircle>();
-		ring.SetRadius (.55f);
+		ring.SetRadius (defenseRadius);
 		
 	}
 
@@ -247,10 +254,10 @@ public class Player : MonoBehaviour {
 	IEnumerator DefenseCooldown(){
 		//Debug.Log("DefenseCooldown");
 		defenseRadius = 0;
-		//yield return new WaitForSeconds (.1f);
+		yield return new WaitForSeconds (.05f);
 		ring.SetRadius (defenseRadius);
-		yield return new WaitForSeconds (0);
-		defenseRadius = .55f;
+		yield return new WaitForSeconds (1);
+		defenseRadius = 1.55f;
 		ring.SetRadius (defenseRadius);
 		defenseAvailable = true;
 		//Debug.Log ("Defense Available");
