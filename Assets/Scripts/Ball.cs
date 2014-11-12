@@ -177,8 +177,8 @@ public class Ball : MonoBehaviour {
 
 		this.rigidbody2D.MovePosition (this.transform.position + move);
 		if (moveDirection.magnitude > .01f) {
-						this.transform.LookAt (this.transform.position + moveDirection);	
-						this.transform.Rotate (0, 90, 90);
+			float angle = Mathf.Atan2(moveDirection.y, moveDirection.x) * Mathf.Rad2Deg;
+			transform.rotation = Quaternion.AngleAxis(angle -90, Vector3.forward);
 				} 
 		if (moveDirection.magnitude < .1f && isNeutral && !isHome) {
 			StartCoroutine("ReturnHome");
