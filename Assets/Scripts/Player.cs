@@ -17,6 +17,7 @@ public class Player : MonoBehaviour {
 	public float scaleFactor;
 	public bool againstWall;
 	public Vector3 moveVector;
+	public Color color;
 
 	float defenseRadius = 1.5f;
 	protected PlayerIndex gamepadNum;
@@ -85,7 +86,7 @@ public class Player : MonoBehaviour {
 		Move ();
 	}
 
-	void SetColor(Team t){
+	/*void SetColor(Team t){
 		switch (t) {
 		case Team.ONE:
 			renderer.material.color = Color.cyan;
@@ -99,6 +100,11 @@ public class Player : MonoBehaviour {
 
 			break;
 		}
+	}*/
+
+	void SetColor(Color c){
+		renderer.material.color = color;
+		particleSystem.startColor = color;
 	}
 
 	void Throw(){
@@ -187,7 +193,7 @@ public class Player : MonoBehaviour {
 		else {
 		}
 
-		SetColor (team);
+		SetColor (color);
 		ring = transform.FindChild ("Ring").GetComponent<LineCircle>();
 		ring.SetRadius (defenseRadius);
 		
