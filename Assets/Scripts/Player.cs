@@ -8,6 +8,8 @@ public enum Team{ONE, TWO};
 public class Player : MonoBehaviour {
 	public int playerNum;
 
+	GameObject visual;
+
 	public Team team;
 
 	private int health = 3;
@@ -19,7 +21,7 @@ public class Player : MonoBehaviour {
 	public Vector3 moveVector;
 	public Color color;
 
-	float defenseRadius = 1.5f;
+	float defenseRadius = 1.4f;
 	protected PlayerIndex gamepadNum;
 	protected GamePadState gamepad;
 	protected LineCircle ring;
@@ -103,7 +105,8 @@ public class Player : MonoBehaviour {
 	}*/
 
 	void SetColor(Color c){
-		renderer.material.color = color;
+		//renderer.material.color = color;
+		visual.renderer.material.color = color;
 		particleSystem.startColor = color;
 	}
 
@@ -120,7 +123,7 @@ public class Player : MonoBehaviour {
 	}
 
 	void Catch(){
-		Collider2D[] objectsInRing = Physics2D.OverlapCircleAll (new Vector2 (transform.position.x, transform.position.y), defenseRadius);
+		Collider2D[] objectsInRing = Physics2D.OverlapCircleAll (new Vector2 (transform.position.x, transform.position.y), defenseRadius + .1f);
 		foreach (Collider2D obj in objectsInRing) {
 			if (obj.gameObject.tag == "Ball"){
 				//StartCoroutine("SlowMotion", .1f);
@@ -129,6 +132,9 @@ public class Player : MonoBehaviour {
 					Camera.main.audio.PlayOneShot (catchSound);
 
 				}
+				if (ball.isNeutral){
+				}
+				else{
 				if (heldBall == null){
 					ball.particleSystem.Emit(10);
 					//Camera.main.audio.PlayOneShot (catchSound);
@@ -140,6 +146,7 @@ public class Player : MonoBehaviour {
 
 					ball.particleSystem.Emit(10);
 					ball.SetNeutral();
+				}
 				}
 			}
 		}
@@ -192,6 +199,7 @@ public class Player : MonoBehaviour {
 		} 
 		else {
 		}
+		visual = transform.FindChild ("Visual").gameObject;
 
 		SetColor (color);
 		ring = transform.FindChild ("Ring").GetComponent<LineCircle>();

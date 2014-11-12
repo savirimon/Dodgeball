@@ -145,21 +145,14 @@ public class Ball : MonoBehaviour {
 		isHome = false;
 		this.gameObject.layer = LayerMask.NameToLayer ("Ball");
 		owner = p;
-		switch (p.team) {
-		case Team.ONE:
-			SetColor(Color.cyan);
-			break;
-		case Team.TWO:
-			SetColor(Color.magenta);
-			break;
-		}
+		SetColor (owner.color);
 
 		isNeutral = false;
 		isHeld = true;
 		collider2D.enabled = false;
 		trail.enabled = false;
 		transform.parent = owner.transform;
-		transform.localPosition = Vector3.right;
+		transform.localPosition = Vector3.right * .8f;
 		transform.localRotation = Quaternion.Euler(0,0,-90);
 		rigidbody2D.isKinematic = true;
 	}
@@ -173,6 +166,12 @@ public class Ball : MonoBehaviour {
 			}
 				} else
 						moveDirection *= (1-Time.fixedDeltaTime * .5f);
+
+		if (moveDirection.magnitude > 3){
+			moveDirection = moveDirection.normalized * 3;
+			
+		}
+
 		Vector3 move = moveDirection * Time.fixedDeltaTime * speed;
 		
 
@@ -249,10 +248,12 @@ public class Ball : MonoBehaviour {
 	IEnumerator ReturnHome(){
 		isHome = true;
 
-		float effectSpeed = 1;
+		float effectSpeed = 2;
 		collider2D.enabled = false;
 		ring.SetRadius (1);
 
+		trail.time = -1;
+		trail.enabled = false;
 
 		float t = this.transform.localScale.x;
 		while (t > 0) {
@@ -262,7 +263,9 @@ public class Ball : MonoBehaviour {
 			yield return null;
 		}
 		t = 0;
-		trail.enabled = false;
+
+
+		yield return null;
 
 		this.transform.position = homePos;
 		moveDirection = Vector3.zero;
@@ -278,5 +281,6 @@ public class Ball : MonoBehaviour {
 		ring.SetRadius (0);
 		collider2D.enabled = true;
 		trail.enabled = true;
+		trail.time = .3f;
 	}
 }
