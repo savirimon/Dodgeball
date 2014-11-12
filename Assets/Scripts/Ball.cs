@@ -112,11 +112,13 @@ public class Ball : MonoBehaviour {
 			Vector3 normal = (this.transform.position - other.transform.position).normalized;
 			
 			if (other.isNeutral){
+				//Physics2D.IgnoreCollision();
 				Deflect(normal);
 				Camera.main.audio.PlayOneShot(wallDeflect);
 				
 			}
-			else if (other.owner.team == owner.team){
+			else if (!this.isNeutral){
+			if (other.owner.team == owner.team){
 				Deflect(normal);
 				Camera.main.audio.PlayOneShot(wallDeflect);
 				
@@ -124,6 +126,7 @@ public class Ball : MonoBehaviour {
 			else if (other.owner.team != owner.team){
 				Deflect(normal);
 				Camera.main.audio.PlayOneShot(wallDeflect);
+			}
 			}
 		}
 
@@ -135,11 +138,12 @@ public class Ball : MonoBehaviour {
 		renderer.material.color = color;
 		arrow.renderer.material.color = color;
 		trail.renderer.material.color = color;
+		particleSystem.startColor = color;
 	}
 
 	public void SetOwner(Player p){
 		isHome = false;
-
+		this.gameObject.layer = LayerMask.NameToLayer ("Ball");
 		owner = p;
 		switch (p.team) {
 		case Team.ONE:
@@ -186,6 +190,7 @@ public class Ball : MonoBehaviour {
 		isNeutral = true;
 		owner = null;
 		SetColor(Color.white);
+		this.gameObject.layer = LayerMask.NameToLayer ("DeadBall");
 	}
 
 	// Use this for initialization
@@ -195,10 +200,11 @@ public class Ball : MonoBehaviour {
 		//ring.SetRadius (this.transform.localScale.x);
 
 		homePos = this.transform.position;
-		isNeutral = true;
 		//moveDirection = Vector3.one - Vector3.forward;
 		arrow = transform.FindChild ("Arrow").gameObject;
 		trail = transform.FindChild ("Trail").gameObject.GetComponent<TrailRenderer> ();
+		SetNeutral ();
+
 	}
 	void Update(){
 

@@ -28,6 +28,7 @@ public class Player : MonoBehaviour {
 	public GameObject[] healthBars;
 	public AudioClip throwSound;
 	public AudioClip pickupSound;
+	public AudioClip catchSound;
 
 	
 	// Use this for initialization
@@ -118,10 +119,20 @@ public class Player : MonoBehaviour {
 			if (obj.gameObject.tag == "Ball"){
 				//StartCoroutine("SlowMotion", .1f);
 				Ball ball  = obj.GetComponent<Ball>();
+				if(!ball.isNeutral && ball.owner.team != this.team){
+					Camera.main.audio.PlayOneShot (catchSound);
+
+				}
 				if (heldBall == null){
+					ball.particleSystem.Emit(10);
+					//Camera.main.audio.PlayOneShot (catchSound);
+
 					Pickup(ball);
 				}
 				else{ ball.Deflect(ball.transform.position - this.transform.position);
+					//Camera.main.audio.PlayOneShot (catchSound);
+
+					ball.particleSystem.Emit(10);
 					ball.SetNeutral();
 				}
 			}
@@ -212,8 +223,10 @@ public class Player : MonoBehaviour {
 	}
 	
 	public void DecrementHealth(){
-		healthBars [health - 1].renderer.enabled = false;
-		health--;
+		if (health > 0) {
+						healthBars [health - 1].renderer.enabled = false;
+						health--;
+				}
 		particleSystem.Emit(10);
 	}
 
@@ -252,12 +265,28 @@ public class Player : MonoBehaviour {
 	}
 
 	IEnumerator DefenseCooldown(){
+		defenseAvailable = false;
+		float effectSpeed = 10;
+		//float maxDefenseRadius = defenseRadius;
 		//Debug.Log("DefenseCooldown");
-		defenseRadius = 0;
-		yield return new WaitForSeconds (.05f);
-		ring.SetRadius (defenseRadius);
+		float t = defenseRadius;
+		//defenseRadius = 0;
+
+		while (t > .55f) {
+			t -= Time.deltaTime * effectSpeed;
+			ring.SetRadius(t);
+			yield return null;
+		}
+		ring.SetRadius (.55f);
+		t = .55f;
 		yield return new WaitForSeconds (1);
-		defenseRadius = 1.55f;
+
+		while (t < defenseRadius) {
+			t += Time.deltaTime * effectSpeed;
+			ring.SetRadius(t);
+			yield return null;
+		}
+
 		ring.SetRadius (defenseRadius);
 		defenseAvailable = true;
 		//Debug.Log ("Defense Available");
