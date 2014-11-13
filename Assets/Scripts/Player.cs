@@ -20,6 +20,7 @@ public class Player : MonoBehaviour {
 	public bool againstWall;
 	public Vector3 moveVector;
 	public Color color;
+	private LineCircle[] healthBalls;
 
 	float defenseRadius = 1.4f;
 	protected PlayerIndex gamepadNum;
@@ -38,7 +39,7 @@ public class Player : MonoBehaviour {
 	void Start () {
 		Init ();
 
-		healthBars = new GameObject[health];
+		healthBalls = new LineCircle[health];
 		DisplayHealth();
 	}
 	
@@ -87,22 +88,6 @@ public class Player : MonoBehaviour {
 	void FixedUpdate(){
 		Move ();
 	}
-
-	/*void SetColor(Team t){
-		switch (t) {
-		case Team.ONE:
-			renderer.material.color = Color.cyan;
-			particleSystem.startColor = Color.cyan;
-			//gameObject.layer = LayerMask.NameToLayer("TeamOne");
-			break;
-		case Team.TWO:
-			renderer.material.color = Color.magenta;
-			particleSystem.startColor = Color.magenta;
-			//gameObject.layer = LayerMask.NameToLayer("TeamTwo");
-
-			break;
-		}
-	}*/
 
 	void SetColor(Color c){
 		//renderer.material.color = color;
@@ -219,7 +204,20 @@ public class Player : MonoBehaviour {
 		Debug.Log("pickup sound");
 	}
 	
+	//function to display health as tiny circles within the player
 	void DisplayHealth(){
+		//draw 3 circles
+		healthBalls[0] = transform.FindChild ("HPball0").GetComponent<LineCircle>();
+		healthBalls[1] = transform.FindChild("HPball1").GetComponent<LineCircle>();
+		healthBalls[2] = transform.FindChild("HPball2").GetComponent<LineCircle>();
+	}
+
+
+	public void DecrementHealth(){
+		//makes one of the circles black
+	}
+
+	/*void DisplayHealth(){
 		for(int i = 0; i < health; i++){
 			GameObject bar = GameObject.CreatePrimitive(PrimitiveType.Quad);
 			if(team == Team.ONE){
@@ -242,7 +240,7 @@ public class Player : MonoBehaviour {
 						health--;
 				}
 		particleSystem.Emit(10);
-	}
+	}*/
 
 	void OnTriggerEnter2D(Collider2D other){
 		if(other.tag == "Ball"){
