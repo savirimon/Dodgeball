@@ -21,6 +21,7 @@ public class Player : MonoBehaviour {
 	public Vector3 moveVector;
 	public Color color;
 	private LineCircle[] healthBalls;
+	private LineCircle[] dmgBalls;
 
 	float defenseRadius = 1.4f;
 	protected PlayerIndex gamepadNum;
@@ -40,6 +41,7 @@ public class Player : MonoBehaviour {
 		Init ();
 
 		healthBalls = new LineCircle[health];
+		dmgBalls = new LineCircle[health];
 		DisplayHealth();
 	}
 	
@@ -215,6 +217,20 @@ public class Player : MonoBehaviour {
 
 	public void DecrementHealth(){
 		//makes one of the circles black
+		health--;
+		switch(health){
+			case 0:
+				dmgBalls[0] = transform.FindChild("black0").GetComponent<LineCircle>();
+				break;
+			case 1:
+				dmgBalls[1] = transform.FindChild("black1").GetComponent<LineCircle>();
+				break;
+			case 2:
+				dmgBalls[2] = transform.FindChild("black1").GetComponent<LineCircle>();
+				break;
+			default:
+				break;
+		}
 	}
 
 	/*void DisplayHealth(){
