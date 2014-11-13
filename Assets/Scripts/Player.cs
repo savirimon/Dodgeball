@@ -230,10 +230,10 @@ public class Player : MonoBehaviour {
 				dmgBalls[0].renderer.enabled = true;
 				break;
 			case 1:
-				dmgBalls[0].renderer.enabled = true;
+				dmgBalls[1].renderer.enabled = true;
 				break;
 			case 2:
-				dmgBalls[0].renderer.enabled = true;
+				dmgBalls[2].renderer.enabled = true;
 				break;
 			default:
 				break;
