@@ -212,6 +212,13 @@ public class Player : MonoBehaviour {
 		healthBalls[0] = transform.FindChild ("HPball0").GetComponent<LineCircle>();
 		healthBalls[1] = transform.FindChild("HPball1").GetComponent<LineCircle>();
 		healthBalls[2] = transform.FindChild("HPball2").GetComponent<LineCircle>();
+		dmgBalls[0] = transform.FindChild("black0").GetComponent<LineCircle>();
+		dmgBalls[1] = transform.FindChild("black1").GetComponent<LineCircle>();
+		dmgBalls[2] = transform.FindChild("black2").GetComponent<LineCircle>();
+
+		for(int i = 0; i <= health; i++){
+			dmgBalls[i].renderer.enabled = false;
+		}
 	}
 
 
@@ -220,13 +227,13 @@ public class Player : MonoBehaviour {
 		health--;
 		switch(health){
 			case 0:
-				dmgBalls[0] = transform.FindChild("black0").GetComponent<LineCircle>();
+				dmgBalls[0].renderer.enabled = true;
 				break;
 			case 1:
-				dmgBalls[1] = transform.FindChild("black1").GetComponent<LineCircle>();
+				dmgBalls[0].renderer.enabled = true;
 				break;
 			case 2:
-				dmgBalls[2] = transform.FindChild("black1").GetComponent<LineCircle>();
+				dmgBalls[0].renderer.enabled = true;
 				break;
 			default:
 				break;
