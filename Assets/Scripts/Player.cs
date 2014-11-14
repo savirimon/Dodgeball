@@ -209,15 +209,16 @@ public class Player : MonoBehaviour {
 	//function to display health as tiny circles within the player
 	void DisplayHealth(){
 		//draw 3 circles
-		healthBalls[0] = transform.FindChild ("HPball0").GetComponent<LineCircle>();
+		/*
+		healthBalls[0] = transform.FindChild("HPball0").GetComponent<LineCircle>();
 		healthBalls[1] = transform.FindChild("HPball1").GetComponent<LineCircle>();
 		healthBalls[2] = transform.FindChild("HPball2").GetComponent<LineCircle>();
-		dmgBalls[0] = transform.FindChild("black0").GetComponent<MeshFilter>();
+		dmgBalls[0] = transform.FindChild("Balls").FindChild("black0").GetComponent<MeshFilter>();
 		dmgBalls[1] = transform.FindChild("black1").GetComponent<MeshFilter>();
-		dmgBalls[2] = transform.FindChild("black2").GetComponent<MeshFilter>();
+		dmgBalls[2] = transform.FindChild("black2").GetComponent<MeshFilter>();*/
 
 		for(int i = 0; i < health; i++){
-			dmgBalls[i].renderer.enabled = false;
+			healthBars[i + health].renderer.enabled = false;
 		}
 	}
 
@@ -228,13 +229,13 @@ public class Player : MonoBehaviour {
 		particleSystem.Emit(10);
 		switch(health){
 			case 0:
-				dmgBalls[0].renderer.enabled = true;
+				healthBars[3].renderer.enabled = true;
 				break;
 			case 1:
-				dmgBalls[1].renderer.enabled = true;
+				healthBars[4].renderer.enabled = true;
 				break;
 			case 2:
-				dmgBalls[2].renderer.enabled = true;
+				healthBars[5].renderer.enabled = true;
 				break;
 			default:
 				break;
