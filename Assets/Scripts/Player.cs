@@ -186,10 +186,10 @@ public class Player : MonoBehaviour {
 		} 
 		else {
 			transform.FindChild("Balls").GetComponent<Transform>().Rotate(0,0,180);
-			Vector3 currPos = transform.FindChild("Balls").GetComponent<Transform>().position;
+			Vector3 currPos = transform.FindChild("Balls").GetComponent<Transform>().localPosition;
 			Vector3 newPos = new Vector3(currPos.x, -currPos.y, currPos.z);
 
-			transform.FindChild("Balls").GetComponent<Transform>().position = newPos;
+			transform.FindChild("Balls").GetComponent<Transform>().localPosition = newPos;
 
 		}
 		visual = transform.FindChild ("Visual").gameObject;
