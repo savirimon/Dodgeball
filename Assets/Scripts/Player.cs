@@ -39,10 +39,6 @@ public class Player : MonoBehaviour {
 	// Use this for initialization
 	void Start () {
 		Init ();
-
-		healthBalls = new LineCircle[health];
-		dmgBalls = new MeshFilter[health];
-		DisplayHealth();
 	}
 	
 	// Update is called once per frame
@@ -181,17 +177,27 @@ public class Player : MonoBehaviour {
 			break;
 		}
 		name = ("Player " + playerNum);
+		//healthBalls = new LineCircle[health];
+		//dmgBalls = new MeshFilter[health];
+		DisplayHealth();
+
 		if (this.transform.position.x > 0) {
 			transform.Rotate(0,0,180);
 		} 
 		else {
+			transform.FindChild("Balls").GetComponent<Transform>().Rotate(0,0,180);
+			Vector3 currPos = transform.FindChild("Balls").GetComponent<Transform>().position;
+			Vector3 newPos = new Vector3(currPos.x, -currPos.y, currPos.z);
+
+			transform.FindChild("Balls").GetComponent<Transform>().position = newPos;
+
 		}
 		visual = transform.FindChild ("Visual").gameObject;
 
 		SetColor (color);
 		ring = transform.FindChild ("Ring").GetComponent<LineCircle>();
 		ring.SetRadius (defenseRadius);
-		
+
 	}
 
 	void PlayThrowSound(){
