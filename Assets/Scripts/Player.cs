@@ -21,7 +21,7 @@ public class Player : MonoBehaviour {
 	public Vector3 moveVector;
 	public Color color;
 	private LineCircle[] healthBalls;
-	private LineCircle[] dmgBalls;
+	private MeshFilter[] dmgBalls;
 
 	float defenseRadius = 1.4f;
 	protected PlayerIndex gamepadNum;
@@ -41,7 +41,7 @@ public class Player : MonoBehaviour {
 		Init ();
 
 		healthBalls = new LineCircle[health];
-		dmgBalls = new LineCircle[health];
+		dmgBalls = new MeshFilter[health];
 		DisplayHealth();
 	}
 	
@@ -212,11 +212,11 @@ public class Player : MonoBehaviour {
 		healthBalls[0] = transform.FindChild ("HPball0").GetComponent<LineCircle>();
 		healthBalls[1] = transform.FindChild("HPball1").GetComponent<LineCircle>();
 		healthBalls[2] = transform.FindChild("HPball2").GetComponent<LineCircle>();
-		dmgBalls[0] = transform.FindChild("black0").GetComponent<LineCircle>();
-		dmgBalls[1] = transform.FindChild("black1").GetComponent<LineCircle>();
-		dmgBalls[2] = transform.FindChild("black2").GetComponent<LineCircle>();
+		dmgBalls[0] = transform.FindChild("black0").GetComponent<MeshFilter>();
+		dmgBalls[1] = transform.FindChild("black1").GetComponent<MeshFilter>();
+		dmgBalls[2] = transform.FindChild("black2").GetComponent<MeshFilter>();
 
-		for(int i = 0; i <= health; i++){
+		for(int i = 0; i < health; i++){
 			dmgBalls[i].renderer.enabled = false;
 		}
 	}
