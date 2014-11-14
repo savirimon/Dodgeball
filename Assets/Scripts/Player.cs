@@ -225,6 +225,7 @@ public class Player : MonoBehaviour {
 	public void DecrementHealth(){
 		//makes one of the circles black
 		health--;
+		particleSystem.Emit(10);
 		switch(health){
 			case 0:
 				dmgBalls[0].renderer.enabled = true;
