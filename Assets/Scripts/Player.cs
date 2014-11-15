@@ -12,7 +12,7 @@ public class Player : MonoBehaviour {
 
 	public Team team;
 
-	private int health = 0;
+	private int health = 3;
 	public float speed;
 	public Ball heldBall;
 	public bool isThrowing;
