@@ -12,7 +12,7 @@ public class Player : MonoBehaviour {
 
 	public Team team;
 
-	private int health = 3;
+	private int health = 0;
 	public float speed;
 	public Ball heldBall;
 	public bool isThrowing;
@@ -34,6 +34,8 @@ public class Player : MonoBehaviour {
 	public AudioClip throwSound;
 	public AudioClip pickupSound;
 	public AudioClip catchSound;
+
+	public bool isDead = false;
 
 	
 	// Use this for initialization
@@ -203,7 +205,7 @@ public class Player : MonoBehaviour {
 	void PlayThrowSound(){
 		Camera.main.audio.PlayOneShot (throwSound);
 		//AudioSource.PlayClipAtPoint(throwSound, transform.position);
-		Debug.Log("throw sound");
+//		Debug.Log("throw sound");
 	}
 	
 	void PlayPickupSound(){
@@ -245,6 +247,10 @@ public class Player : MonoBehaviour {
 				break;
 			default:
 				break;
+		}
+		if (health < 0) {
+			//Throw ();
+			StartCoroutine("Death");		
 		}
 	}
 
@@ -343,6 +349,26 @@ public class Player : MonoBehaviour {
 		}
 
 		Time.timeScale = 1;
+	}
+
+	IEnumerator Death(){
+		isDead = true;
+		Throw ();
+		this.enabled = false;
+		//GameObject.Destroy (this.collider2D);
+		//GameObject.Destroy (this.collider2D);
+		foreach (CircleCollider2D col in transform.GetComponents<CircleCollider2D> ()) {
+			col.enabled = false;		
+		}
+		//collider2D.enabled = false;
+		visual.renderer.enabled = false;
+		ring.gameObject.SetActive (false);
+		transform.FindChild ("Balls").gameObject.SetActive (false);
+
+		yield return new WaitForSeconds (2);
+
+		GameObject.Destroy (this.gameObject);
+
 	}
 	
 }

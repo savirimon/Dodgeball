@@ -20,44 +20,9 @@ public class Ball : MonoBehaviour {
 	protected LineCircle ring;
 	bool isHome = true;
 
-
-	/*
-	void OnTriggerEnter2D(Collider2D other){
-		p = other.GetComponent<Player>();
-		if(other.tag == "Player"){
-			if(isNeutral){
-				owner = p.team;
-				Debug.Log("owner: " + owner);
-				SetColor(owner);
-				p.b = this;
-				p.b.transform.parent  = p.transform;
-			}else{
-				p.health--;
-				Debug.Log("decrement health");
-			}
-		}
-
-		if(other.tag == "Top"){
-			moveDirection = new Vector3(moveDirection.x, -moveDirection.y);
-		}
-
-		if(other.tag == "Bottom"){
-
-		}
-
-		if(other.tag == "Left"){
-
-		}
-
-		if(other.tag == "Right"){
-
-		}
-
-	}
-	*/
+	
 
 	void OnCollisionEnter2D(Collision2D col){
-//		Debug.Log (col.collider.gameObject);
 		if (LayerMask.NameToLayer("Wall") == col.collider.gameObject.layer) {
 
 			if(col.gameObject.tag == "Top"){
@@ -188,6 +153,7 @@ public class Ball : MonoBehaviour {
 	public void SetNeutral(){
 		isNeutral = true;
 		owner = null;
+		isHeld = false;
 		SetColor(Color.white);
 		this.gameObject.layer = LayerMask.NameToLayer ("DeadBall");
 	}
@@ -210,8 +176,13 @@ public class Ball : MonoBehaviour {
 	}
 	// Update is called once per frame
 	void FixedUpdate () {
+		if (owner != null && owner.isDead){ 
+			Debug.Log("neutralize ball, owner is dead");
+			SetNeutral();
+		}
+
 		if (!isHeld) {
-						MoveBall ();
+			MoveBall ();
 				}
 	}
 
@@ -277,7 +248,7 @@ public class Ball : MonoBehaviour {
 		}
 		this.transform.localScale = Vector3.one * .5f;
 		trail.startWidth = .5f;
-		Debug.Log ("here");
+//		Debug.Log ("here");
 		ring.SetRadius (0);
 		collider2D.enabled = true;
 		trail.enabled = true;
