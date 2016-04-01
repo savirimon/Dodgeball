@@ -12,7 +12,7 @@ public class Player : MonoBehaviour {
 
 	public Team team;
 
-	private int health = 3;
+	public int health = 3;
 	public float speed;
 	public Ball heldBall;
 	public bool isThrowing;
@@ -91,8 +91,8 @@ public class Player : MonoBehaviour {
 
 	void SetColor(Color c){
 		//renderer.material.color = color;
-		visual.renderer.material.color = color;
-		particleSystem.startColor = color;
+		visual.GetComponent<Renderer>().material.color = color;
+		GetComponent<ParticleSystem>().startColor = color;
 	}
 
 	void Throw(){
@@ -113,26 +113,39 @@ public class Player : MonoBehaviour {
 			if (obj.gameObject.tag == "Ball"){
 				//StartCoroutine("SlowMotion", .1f);
 				Ball ball  = obj.GetComponent<Ball>();
+				//catching an opponent's ball
 				if(!ball.isNeutral && ball.owner.team != this.team){
-					Camera.main.audio.PlayOneShot (catchSound);
+					Camera.main.GetComponent<AudioSource>().PlayOneShot (catchSound);
+					ball.GetComponent<ParticleSystem>().Emit(10);
+					if (heldBall == null){
+						Pickup(ball);
+						RecoverHealth();
+					}
+					else{
+						ball.Deflect(ball.transform.position - this.transform.position);
+						ball.SetNeutral();
 
+					}
 				}
+				/*
 				if (ball.isNeutral){
 				}
 				else{
-				if (heldBall == null){
-					ball.particleSystem.Emit(10);
-					//Camera.main.audio.PlayOneShot (catchSound);
+					if (heldBall == null){
+						ball.particleSystem.Emit(10);
+						//Camera.main.audio.PlayOneShot (catchSound);
 
-					Pickup(ball);
-				}
-				else{ ball.Deflect(ball.transform.position - this.transform.position);
-					//Camera.main.audio.PlayOneShot (catchSound);
+						Pickup(ball);
+					}
+					else{ 
+						ball.Deflect(ball.transform.position - this.transform.position);
+						//Camera.main.audio.PlayOneShot (catchSound);
 
-					ball.particleSystem.Emit(10);
-					ball.SetNeutral();
+						ball.particleSystem.Emit(10);
+						ball.SetNeutral();
+					}
 				}
-				}
+				*/
 			}
 		}
 	}
@@ -155,7 +168,7 @@ public class Player : MonoBehaviour {
 			leftY = gamepad.ThumbSticks.Left.Y;
 		}
 		moveVector = new Vector3 (leftX, leftY, 0);
-		this.rigidbody2D.MovePosition (this.transform.position + moveVector * Time.fixedDeltaTime * speed);
+		this.GetComponent<Rigidbody2D>().MovePosition (this.transform.position + moveVector * Time.fixedDeltaTime * speed);
 	}
 
 
@@ -203,13 +216,13 @@ public class Player : MonoBehaviour {
 	}
 
 	void PlayThrowSound(){
-		Camera.main.audio.PlayOneShot (throwSound);
+		Camera.main.GetComponent<AudioSource>().PlayOneShot (throwSound);
 		//AudioSource.PlayClipAtPoint(throwSound, transform.position);
 //		Debug.Log("throw sound");
 	}
 	
 	void PlayPickupSound(){
-		Camera.main.audio.PlayOneShot (pickupSound);
+		Camera.main.GetComponent<AudioSource>().PlayOneShot (pickupSound);
 		//AudioSource.PlayClipAtPoint(pickupSound, transform.position);
 		Debug.Log("pickup sound");
 	}
@@ -225,8 +238,12 @@ public class Player : MonoBehaviour {
 		dmgBalls[1] = transform.FindChild("black1").GetComponent<MeshFilter>();
 		dmgBalls[2] = transform.FindChild("black2").GetComponent<MeshFilter>();*/
 
-		for(int i = 0; i < health; i++){
-			healthBars[i + health].renderer.enabled = false;
+		for(int i = 0; i < 3; i++){
+			if (i<health)
+			healthBars[i].GetComponent<Renderer>().enabled = false;
+			else
+				healthBars[i].GetComponent<Renderer>().enabled = true;
+
 		}
 	}
 
@@ -234,50 +251,21 @@ public class Player : MonoBehaviour {
 	public void DecrementHealth(){
 		//makes one of the circles black
 		health--;
-		particleSystem.Emit(10);
-		switch(health){
-			case 0:
-				healthBars[3].renderer.enabled = true;
-				break;
-			case 1:
-				healthBars[4].renderer.enabled = true;
-				break;
-			case 2:
-				healthBars[5].renderer.enabled = true;
-				break;
-			default:
-				break;
-		}
+		GetComponent<ParticleSystem>().Emit(10);
+		DisplayHealth ();
 		if (health < 0) {
 			//Throw ();
 			StartCoroutine("Death");		
 		}
 	}
 
-	/*void DisplayHealth(){
-		for(int i = 0; i < health; i++){
-			GameObject bar = GameObject.CreatePrimitive(PrimitiveType.Quad);
-			if(team == Team.ONE){
-				bar.transform.position = new Vector3(11f,-1.5f + i * 1.5f);
-				bar.renderer.material.color = Color.cyan;
-				
-			}else if(team == Team.TWO){
-				bar.transform.position = new Vector3(-11f,-1.5f + i * 1.5f);
-				bar.renderer.material.color = Color.magenta;
-				
-			}
-			bar.transform.localScale =  new Vector3(2,1,1);
-			healthBars[i] = bar;
-		}
-	}
-	
-	public void DecrementHealth(){
-		if (health > 0) {
-						healthBars [health - 1].renderer.enabled = false;
-						health--;
+	public void RecoverHealth(){
+		if (health < 3) {
+						health++;
 				}
-		particleSystem.Emit(10);
-	}*/
+		DisplayHealth ();
+	}
+
 
 	void OnTriggerEnter2D(Collider2D other){
 		if(other.tag == "Ball"){
@@ -361,7 +349,7 @@ public class Player : MonoBehaviour {
 			col.enabled = false;		
 		}
 		//collider2D.enabled = false;
-		visual.renderer.enabled = false;
+		visual.GetComponent<Renderer>().enabled = false;
 		ring.gameObject.SetActive (false);
 		transform.FindChild ("Balls").gameObject.SetActive (false);
 
